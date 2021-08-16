@@ -1,9 +1,12 @@
 package com.ababilauth.ababildemo.clientServiceImp;
 
 import com.ababilauth.ababildemo.clientService.AbabilClientService;
+import com.ababilauth.ababildemo.clientService.TokenService;
 import com.ababilauth.ababildemo.domain.AccountDomain;
+import com.ababilauth.ababildemo.entity.TokenStore;
 import com.ababilauth.ababildemo.model.AccountDetails;
 import com.ababilauth.ababildemo.model.AuthResponse;
+import com.ababilauth.ababildemo.repository.TokenRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -24,8 +27,14 @@ public class AbabilClientServiceImp implements AbabilClientService {
     @Override
     public AuthResponse getAuthentication(Map<String, String> map) {
         RestTemplate template = new RestTemplate();
-
-        return template.postForObject("http://192.168.1.140:3030/oauth/token",map, AuthResponse.class);
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Content-Type", "application/json");
+        HttpEntity entity = new HttpEntity(map,headers);
+        ResponseEntity<AuthResponse> response = template.exchange("http://192.168.1.140:3030/oauth/token",HttpMethod.POST,entity, AuthResponse.class);
+        AuthResponse authResponse = response.getBody();
+        authResponse.setF_Token(response.getHeaders().get("F-Token").get(0));
+//        AuthResponse authResponse = template.postForObject("http://192.168.1.140:3030/oauth/token",map, AuthResponse.class);
+        return authResponse;
     }
 
     @Override
@@ -36,7 +45,6 @@ public class AbabilClientServiceImp implements AbabilClientService {
         headers.set("Content-Type", "application/json");
         headers.set("Authorization", "bearer "+authResponse.getAccess_token());
         HttpEntity entity = new HttpEntity(headers);
-
         ResponseEntity<AccountDetails> response = template.exchange(
                 "http://192.168.1.140:3030/ababil-deposit/api/demand-deposit-accounts/"+accountNumber, HttpMethod.GET, entity, AccountDetails.class);
         AccountDomain account = new AccountDomain();
@@ -46,4 +54,6 @@ public class AbabilClientServiceImp implements AbabilClientService {
         ObjectMapper mapper = new ObjectMapper();
         return account;
     }
+
+//
 }

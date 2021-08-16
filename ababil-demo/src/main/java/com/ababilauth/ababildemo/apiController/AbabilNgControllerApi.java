@@ -1,5 +1,6 @@
 package com.ababilauth.ababildemo.apiController;
 
+import com.ababilauth.ababildemo.clientService.TokenService;
 import com.ababilauth.ababildemo.clientServiceImp.AbabilClientServiceImp;
 import com.ababilauth.ababildemo.domain.AccountDomain;
 import com.ababilauth.ababildemo.entity.TokenStore;
@@ -13,10 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDateTime;
+import java.util.*;
 
 @Controller
 @RequestMapping("/ababil")
@@ -24,20 +23,31 @@ public class AbabilNgControllerApi {
     @Autowired
     AbabilClientServiceImp ababilClientServiceImp;
     @Autowired
-    private TokenRepository tokenRepository;
+    private TokenService tokenService;
 
     @GetMapping("/{accountNumber}")
     public ResponseEntity<?> getAccountDetailsByNumber(@PathVariable String accountNumber){
-        Map<String, String> map = new HashMap<>();
-        ObjectMapper mapper = new ObjectMapper();
-        List<TokenStore> tokenList = new ArrayList();
-        tokenList= tokenRepository.findByIsExpired(1);
-        map.put("grant_type", "Password");
-        map.put("username", "treasury");
-        map.put("password", "treasury");
-        AuthResponse authResponse = ababilClientServiceImp.getAuthentication(map);
+        AuthResponse authResponse = getAuthToken();
         AccountDomain accountList = ababilClientServiceImp.getDemandDepositAccount(accountNumber,authResponse);
-//        Object res = mapper.readValue(response,Object.class);
         return ResponseEntity.ok(accountList);
     }
+
+    private AuthResponse getAuthToken(){
+        List<TokenStore> tokenList = new ArrayList();
+        AuthResponse authResponse = new AuthResponse();
+        tokenList = tokenService.findByExpiresAtGreaterThan(Math.toIntExact(System.currentTimeMillis() / 1000));
+        if(tokenList.size() == 0){
+            Map<String, String> map = new HashMap<>();
+            map.put("grant_type", "Password");
+            map.put("username", "treasury");
+            map.put("password", "treasury");
+            authResponse = ababilClientServiceImp.getAuthentication(map);
+            tokenService.save(authResponse);
+            return authResponse;
+        }else{
+            authResponse.setAccess_token(tokenList.get(0).getAccessToken());
+        }
+        return authResponse;
+    }
+
 }

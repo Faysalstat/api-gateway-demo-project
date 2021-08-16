@@ -17,13 +17,13 @@ public class TokenStore implements Serializable {
     private String fToken;
     private String tokenType;
     private String refreshToken;
-    private Date expiresAt;
+    private Integer expiresAt;
     private int isExpired;
 
     public TokenStore() {
     }
 
-    public TokenStore(long id, String accessToken, String fToken, String tokenType, String refreshToken, Date expiresAt, int isExpired) {
+    public TokenStore(long id, String accessToken, String fToken, String tokenType, String refreshToken, Integer expiresAt, int isExpired) {
         this.id = id;
         this.accessToken = accessToken;
         this.fToken = fToken;
@@ -57,7 +57,7 @@ public class TokenStore implements Serializable {
         return refreshToken;
     }
     @Column(name="EXPIRES_AT")
-    public Date getExpiresAt() {
+    public Integer getExpiresAt() {
         return expiresAt;
     }
     @Column(name="IS_EXPIRED")
@@ -85,7 +85,7 @@ public class TokenStore implements Serializable {
         this.refreshToken = refreshToken;
     }
 
-    public void setExpiresAt(Date expiresAt) {
+    public void setExpiresAt(Integer expiresAt) {
         this.expiresAt = expiresAt;
     }
 
