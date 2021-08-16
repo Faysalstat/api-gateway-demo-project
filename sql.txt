@@ -1,0 +1,50 @@
+--
+-- Database: `ababil_auth_db`
+--
+CREATE DATABASE IF NOT EXISTS `ababil_auth_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+USE `ababil_auth_db`;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `token_store`
+--
+
+CREATE TABLE `token_store` (
+  `ID` int(6) NOT NULL,
+  `ACCESS_TOKEN` varchar(255) DEFAULT NULL,
+  `F_TOKEN` varchar(255) DEFAULT NULL,
+  `TOKEN_TYPE` varchar(255) DEFAULT NULL,
+  `REFRESH_TOKEN` varchar(255) DEFAULT NULL,
+  `IS_EXPIRED` int(2) NOT NULL,
+  `EXPIRES_AT` int(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `token_store`
+--
+
+INSERT INTO `token_store` (`ID`, `ACCESS_TOKEN`, `F_TOKEN`, `TOKEN_TYPE`, `REFRESH_TOKEN`, `IS_EXPIRED`, `EXPIRES_AT`) VALUES
+(3, '56d75859-193a-4b3d-a208-3f2f3ab4568c', NULL, 'bearer', NULL, 1, 162913467),
+(5, '71b23d15-4087-4f6f-b9f7-099ff2f8533f', NULL, 'bearer', '92dc3854-7bbb-4e33-8ce8-fc2cefa995d3', 1, 1629133747),
+(10, 'f449abee-13d9-4d7f-b453-eea7bccb795b', '3692f125-8b73-4eeb-ac87-d5e42a7adcae', 'bearer', '3851a577-5a76-49ea-b2f6-af054086f6ea', 1, 1629141194);
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `token_store`
+--
+ALTER TABLE `token_store`
+  ADD PRIMARY KEY (`ID`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `token_store`
+--
+ALTER TABLE `token_store`
+  MODIFY `ID` int(6) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
